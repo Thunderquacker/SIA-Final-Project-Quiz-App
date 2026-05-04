@@ -1,4 +1,5 @@
 import { QuizManager } from "@/components/QuizManager";
+import Link from "next/link";
 import { 
   Search, LayoutGrid, FileText, CalendarDays, 
   Users, Settings, Plus, UserCircle, BellDot 
@@ -55,15 +56,15 @@ export default function Home() {
               <Plus className="w-4 h-4 text-purple-400" /> Create Quiz
             </button>
             <div className="w-px h-6 bg-zinc-800" />
-            <div className="flex items-center gap-3">
+            <Link href="/profile/1" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-medium">Sarah John</p>
                 <p className="text-[10px] text-zinc-500">Instructor</p>
               </div>
-              <div className="w-10 h-10 bg-zinc-800 rounded-full border border-zinc-700 flex items-center justify-center">
+              <div className="w-10 h-10 bg-zinc-800 rounded-full border border-zinc-700 flex items-center justify-center cursor-pointer hover:border-purple-600 transition-colors">
                 <UserCircle className="w-6 h-6 text-zinc-500" />
               </div>
-            </div>
+            </Link>
           </div>
         </header>
 
