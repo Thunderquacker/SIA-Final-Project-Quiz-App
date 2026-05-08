@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 import AuthCard from "@/components/AuthCard";
 import Link from "next/link";
 
-export default function LoginPage() {
+interface LoginPageProps {
+  onLoginSuccess?: () => void;
+}
+
+export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const router = useRouter();
   
   // State to store login credentials
@@ -28,8 +32,13 @@ export default function LoginPage() {
     // For your SIA project: This is where you will eventually call your Spring Boot API
     console.log("Attempting login with:", credentials);
 
-    // Simulate a successful login redirect
-    router.replace("/dashboard"); 
+    // Simulate a successful login
+    if (onLoginSuccess) {
+      onLoginSuccess();
+    } else {
+      // Fallback redirect for standalone login page
+      router.replace("/dashboard");
+    }
   };
 
   return (
