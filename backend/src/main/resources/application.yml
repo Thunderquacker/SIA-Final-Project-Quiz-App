@@ -2,14 +2,14 @@ spring:
   application:
     name: minu-backend
   datasource:
-    url: jdbc:h2:mem:minudb
+    url: jdbc:h2:file:./data/minudb
     driver-class-name: org.h2.Driver
     username: sa
     password:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: false
     defer-datasource-initialization: true
     properties:
@@ -20,7 +20,7 @@ spring:
       enabled: true
 
 server:
-  port: 8081
+  port: 8082
   servlet:
     context-path: /
 
@@ -28,3 +28,8 @@ logging:
   level:
     root: INFO
     com.minu: DEBUG
+
+# JWT Configuration
+jwt:
+  secret: minu-secret-key-for-jwt-token-generation-and-verification-production-safe-64-chars-minimum-required-for-hs512-algorithm-security!
+  expiration: 86400000
