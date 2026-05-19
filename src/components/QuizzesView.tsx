@@ -5,8 +5,11 @@ import {
   MoreVertical, Clock, BarChart 
 } from "lucide-react";
 
-// The "export" keyword here is the CRITICAL fix
-export function QuizzesView() {
+interface QuizzesViewProps {
+  userRole: "STUDENT" | "TEACHER";
+}
+
+export function QuizzesView({ userRole }: QuizzesViewProps) {
   const quizzes = [
     {
       id: 1,
@@ -33,12 +36,20 @@ export function QuizzesView() {
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-2xl font-bold text-white">Quiz Bank</h2>
-          <p className="text-zinc-500 text-sm mt-1">Manage and edit your library of quiz materials</p>
+          <p className="text-zinc-500 text-sm mt-1">
+            {userRole === "TEACHER" 
+              ? "Manage and edit your library of quiz materials" 
+              : "Browse available quiz modules and evaluation repositories"}
+          </p>
         </div>
-        <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 text-sm font-semibold transition-all shadow-lg shadow-purple-900/20">
-          <Plus className="w-4 h-4" />
-          New Quiz
-        </button>
+
+        {/* Only Teachers can create a new quiz */}
+        {userRole === "TEACHER" && (
+          <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 text-sm font-semibold transition-all shadow-lg shadow-purple-900/20">
+            <Plus className="w-4 h-4" />
+            New Quiz
+          </button>
+        )}
       </div>
 
       <div className="bg-[#121213] border border-zinc-800 rounded-2xl p-6">
@@ -73,9 +84,24 @@ export function QuizzesView() {
                   </div>
                 </div>
               </div>
+
+              {/* ACTION LAYOUT GATE: Swaps Edit layout out for a clean View option */}
               <div className="flex items-center gap-2">
-                <button className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-bold transition-all">Edit</button>
-                <button className="p-2 text-zinc-500 hover:text-white rounded-lg"><MoreVertical className="w-4 h-4" /></button>
+                {userRole === "TEACHER" ? (
+                  <>
+                    <button className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-bold transition-all">
+                      Edit
+                    </button>
+                    <button className="p-2 text-zinc-500 hover:text-white rounded-lg">
+                      <MoreVertical className="w-4 h-4" />
+                    </button>
+                  </>
+                ) : (
+                  /* Clean read-only view button replacement for Students */
+                  <button className="px-4 py-1.5 bg-purple-600/10 border border-purple-500/20 text-purple-400 hover:bg-purple-600 hover:text-white rounded-lg text-xs font-bold transition-all">
+                    View
+                  </button>
+                )}
               </div>
             </div>
           ))}

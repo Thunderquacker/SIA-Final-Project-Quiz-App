@@ -3,10 +3,13 @@ package com.minu;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan; // Added import
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+// --- EXPLICIT COUPLING FIX: Force the scanner to search both com.minu and com.quizapp packages ---
 @SpringBootApplication
+@ComponentScan(basePackages = {"com.minu", "com.quizapp.backend"})
 public class MinuApplication {
 
     public static void main(String[] args) {

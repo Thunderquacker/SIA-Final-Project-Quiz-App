@@ -1,146 +1,115 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from "react";
 import { 
-  LayoutGrid, Users, FileBarChart, Clock3, 
-  Award, BrainCircuit, Bot, Plus, TrendingUp 
+  LayoutGrid, Plus, FileText, 
+  Users, Calendar, Clock, BarChart 
 } from "lucide-react";
 
-interface Question {
-  id: number;
-  content: string;
+// Explicitly type the incoming properties interface
+interface QuizManagerProps {
+  userRole?: "STUDENT" | "TEACHER";
 }
 
-export function QuizManager({ initialQuestions = [] }: { initialQuestions?: Question[] }) {
-  // CRITICAL: We initialize with a guaranteed empty array []
-  const [questions, setQuestions] = useState<Question[]>(initialQuestions || []);
-  const [userAnswers, setUserAnswers] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export function QuizManager({ userRole = "STUDENT" }: QuizManagerProps) {
+  // Mock performance metrics data mapping matching the UI cards
+  const metrics = [
+    { title: "Total Quizzes", value: "2,543", change: "+12.5%", isPositive: true, icon: FileText },
+    { title: "Active Events", value: "2,543", change: "+12.5%", isPositive: true, icon: Calendar },
+    { title: "Students", value: "2,543", change: "+12.5%", isPositive: true, icon: Users },
+    { title: "Avg. Completion", value: "2,543", change: "-12.5%", isPositive: false, icon: Clock },
+  ];
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const res = await fetch("http://localhost:8081/api/quiz/questions");
-        if (res.ok) {
-          const data = await res.json();
-          setQuestions(data);
-        }
-      } catch (err) {
-        console.log("Quiz data not available, using empty state");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadData();
-  }, []);
-
-  const handleAnswerChange = (questionId: number, answer: string) => {
-    setUserAnswers(prev => {
-      const filtered = prev.filter(a => a.questionId !== questionId);
-      return [...filtered, { questionId, selectedAnswer: answer }];
-    });
-  };
-
-  const stats = [
-    { label: "Total Quizzes", value: "2,543", trend: "+12.5%", icon: LayoutGrid, color: "text-purple-400" },
-    { label: "Active Events", value: "2,543", trend: "+12.5%", icon: TrendingUp, color: "text-emerald-400" },
-    { label: "Students", value: "2,543", trend: "+12.5%", icon: Users, color: "text-sky-400" },
-    { label: "Avg. Completion", value: "2,543", trend: "-12.5%", icon: Clock3, color: "text-amber-400" },
+  const topStudents = [
+    { name: "Alex John", department: "SCIENCE", score: 950 },
+    { name: "Emma Watson", department: "MATHEMATICS", score: 920 },
+    { name: "Michael Clark", department: "PHYSICS", score: 880 },
   ];
 
   return (
-    <div className="space-y-8">
-      {/* Dashboard Header */}
-      <div className="flex justify-between items-end">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      
+      {/* Dynamic Header Component Block */}
+      <div className="flex justify-between items-start">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Dashboard</h2>
-          <p className="text-zinc-500 mt-1">Welcome back! Here's what's happening.</p>
+          <h3 className="text-3xl font-bold text-white tracking-tight">Dashboard</h3>
+          <p className="text-zinc-500 mt-1 text-sm">
+            {userRole === "TEACHER" 
+              ? "Welcome back! Here's an administrative overview of your system metrics."
+              : "Welcome back! Here's what's happening."}
+          </p>
         </div>
-        <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all">
-          <Plus className="w-5 h-5" /> Create New Quiz
-        </button>
+
+        {/* FIXED: The "Create New Quiz" button will now ONLY render for TEACHER profiles */}
+        {userRole === "TEACHER" && (
+          <button className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-3 rounded-2xl flex items-center gap-2 text-sm font-bold transition-all shadow-lg shadow-purple-900/20">
+            <Plus className="w-4 h-4" /> Create New Quiz
+          </button>
+        )}
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {stats.map((s) => (
-          <div key={s.label} className="bg-[#121213] border border-zinc-800 p-6 rounded-2xl">
-            <div className="flex justify-between mb-4">
-              <span className="text-zinc-400 text-sm font-medium">{s.label}</span>
-              <s.icon className={`w-5 h-5 ${s.color}`} />
+      {/* Analytics Matrix Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {metrics.map((item, index) => (
+          <div key={index} className="bg-[#121213] border border-zinc-800 rounded-2xl p-6 relative overflow-hidden group hover:border-zinc-700 transition-all">
+            <div className="flex justify-between items-start">
+              <span className="text-sm font-medium text-zinc-500">{item.title}</span>
+              <item.icon className="w-5 h-5 text-purple-500/80" />
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-white">{s.value}</span>
-              <span className={`text-[10px] font-bold ${s.trend.startsWith('+') ? 'text-emerald-500' : 'text-red-500'}`}>
-                {s.trend}
+            <div className="flex items-baseline gap-2 mt-4">
+              <span className="text-2xl font-bold text-white tracking-tight">{item.value}</span>
+              <span className={`text-xs font-bold ${item.isPositive ? "text-emerald-500" : "text-red-500"}`}>
+                {item.change}
               </span>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Main Grid Section */}
+      {/* Main Core Dashboard Sections Splits */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-[#121213] border border-zinc-800 rounded-2xl p-8">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-purple-600/10 rounded-full flex items-center justify-center text-purple-500">
-              <Bot className="w-6 h-6" />
+        
+        {/* Left Side: Live Database Connection Window */}
+        <div className="lg:col-span-2 bg-[#121213] border border-zinc-800 rounded-2xl p-6 flex flex-col justify-between min-h-[340px]">
+          <div>
+            <h4 className="text-lg font-bold text-white flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-purple-500 animate-ping" />
+              BSIT Quiz Module (Live)
+            </h4>
+            <div className="mt-12 border border-red-500/10 bg-red-500/5 rounded-xl p-8 flex items-center justify-center">
+              <p className="text-sm text-red-400 font-medium">Offline: Connect to Spring Boot (Port 8081)</p>
             </div>
-            <h3 className="text-xl font-bold text-white">BSIT Quiz Module (Live)</h3>
           </div>
-
-          <div className="space-y-6">
-            {isLoading ? (
-              <div className="h-40 flex items-center justify-center border border-dashed border-zinc-800 rounded-xl text-zinc-600">
-                Connecting to Spring Boot API...
-              </div>
-            ) : (questions?.length > 0) ? (
-              // Safety check: only map if questions exists and has length
-              questions?.map((q) => (
-                <div key={q.id} className="p-5 bg-zinc-900 border border-zinc-800 rounded-xl">
-                  <p className="font-semibold mb-4 text-zinc-200">{q.content}</p>
-                  <input 
-                    type="text" 
-                    placeholder="Type your answer..." 
-                    className="w-full bg-[#0D0D0E] border border-zinc-800 rounded-lg p-3 text-sm focus:border-purple-600 outline-none text-white transition-all"
-                    onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-12 bg-red-950/10 border border-red-900/20 rounded-xl">
-                <p className="text-red-400 text-sm">Offline: Connect to Spring Boot (Port 8081)</p>
-              </div>
-            )}
-            <button className="w-full bg-purple-600 py-4 rounded-xl font-bold text-white hover:bg-purple-700 transition-all shadow-xl shadow-purple-900/10 mt-4 disabled:opacity-50">
-              Submit Quiz Results
-            </button>
-          </div>
+          <button className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-40 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-purple-900/20 text-sm">
+            Submit Quiz Results
+          </button>
         </div>
 
-        {/* Top Students Card */}
-        <div className="bg-[#121213] border border-zinc-800 rounded-2xl p-8">
-          <h3 className="text-xl font-bold mb-8 text-white">Top Students</h3>
-          <div className="space-y-6">
-            {[
-              { name: "Alex John", sub: "Science", score: 950 },
-              { name: "Emma Watson", sub: "Mathematics", score: 920 },
-              { name: "Michael Clark", sub: "Physics", score: 880 }
-            ].map((st, i) => (
-              <div key={st.name} className="flex items-center gap-4">
-                <span className="text-zinc-600 font-bold w-4">{i + 1}</span>
-                <div className="w-10 h-10 bg-zinc-800 rounded-full flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-white">{st.name}</p>
-                  <p className="text-[10px] text-zinc-500 uppercase">{st.sub}</p>
+        {/* Right Side: High Performers Leaderboard Panel */}
+        <div className="bg-[#121213] border border-zinc-800 rounded-2xl p-6">
+          <h4 className="text-lg font-bold text-white mb-6">Top Students</h4>
+          <div className="space-y-4">
+            {topStudents.map((student, idx) => (
+              <div key={idx} className="flex items-center justify-between bg-[#0D0D0E] border border-zinc-800/60 p-4 rounded-xl hover:border-zinc-700 transition-all">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-bold text-zinc-600 w-4">{idx + 1}</span>
+                  <div className="w-9 h-9 rounded-full bg-purple-600/10 flex items-center justify-center font-bold text-purple-400 text-xs">
+                    {student.name.split(" ").map(n => n[0]).join("")}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white">{student.name}</p>
+                    <p className="text-[10px] text-zinc-500 font-medium uppercase tracking-tight">{student.department}</p>
+                  </div>
                 </div>
-                <div className="text-amber-500 font-bold text-sm flex items-center gap-1">
-                  <Award className="w-4 h-4" /> {st.score}
+                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400 bg-amber-500/5 border border-amber-500/10 px-2.5 py-1 rounded-lg">
+                  <span>🏆</span>
+                  <span>{student.score}</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
+
       </div>
     </div>
   );

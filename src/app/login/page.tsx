@@ -1,44 +1,46 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { UserProfile } from "@/lib/api";
 import AuthCard from "@/components/AuthCard";
 import Link from "next/link";
 
 interface LoginPageProps {
-  onLoginSuccess?: () => void;
+  onLoginSuccess: (userData: UserProfile) => void;
 }
 
 export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
-  const router = useRouter();
-  
-  // State to store login credentials
-  const [credentials, setCredentials] = useState({
-    email: "",
-    password: ""
-  });
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setCredentials(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setCredentials(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // For your SIA project: This is where you will eventually call your Spring Boot API
-    console.log("Attempting login with:", credentials);
+    // Dynamically clean and extract name strings from the email entry prefix
+    const extractedName = credentials.email.split("@")[0]
+      .replace(/[._]/g, " ")
+      .replace(/\b\w/g, char => char.toUpperCase());
 
-    // Simulate a successful login
-    if (onLoginSuccess) {
-      onLoginSuccess();
-    } else {
-      // Fallback redirect for standalone login page
-      router.replace("/dashboard");
-    }
+    // DYNAMIC ROLE ASSIGNMENT: Evaluates if "teacher" is present anywhere in the email
+    const assignedRole = credentials.email.toLowerCase().includes("teacher") 
+      ? "TEACHER" 
+      : "STUDENT";
+
+    const mockUser: UserProfile = {
+      userId: 1,
+      username: extractedName || "User",
+      email: credentials.email,
+      role: assignedRole, 
+      totalQuizzesTaken: assignedRole === "STUDENT" ? 12 : 0,
+      averageScore: assignedRole === "STUDENT" ? 88.5 : 0,
+      achievementsCount: assignedRole === "STUDENT" ? 4 : 0
+    };
+
+    onLoginSuccess(mockUser);
   };
 
   return (
@@ -51,9 +53,9 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
             name="email"
             value={credentials.email}
             onChange={handleChange}
-            placeholder="name@university.edu"
+            placeholder="teacher.name@university.edu or student@edu"
             required
-            className="w-full bg-[#0D0D0E] border border-zinc-800 rounded-xl p-4 text-white outline-none focus:border-purple-600 focus:ring-1 focus:ring-purple-600 transition-all"
+            className="w-full bg-[#0D0D0E] border border-zinc-800 rounded-xl p-4 text-white outline-none focus:border-purple-600 transition-all"
           />
         </div>
         
@@ -62,18 +64,15 @@ export default function LoginPage({ onLoginSuccess }: LoginPageProps) {
           <input 
             type="password" 
             name="password"
-            value={credentials.password}
+            value={credentials.password} 
             onChange={handleChange}
             placeholder="••••••••"
             required
-            className="w-full bg-[#0D0D0E] border border-zinc-800 rounded-xl p-4 text-white outline-none focus:border-purple-600 focus:ring-1 focus:ring-purple-600 transition-all"
+            className="w-full bg-[#0D0D0E] border border-zinc-800 rounded-xl p-4 text-white outline-none focus:border-purple-600 transition-all"
           />
         </div>
         
-        <button 
-          type="submit" 
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-purple-900/20"
-        >
+        <button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 rounded-xl transition-all">
           Sign In
         </button>
 
