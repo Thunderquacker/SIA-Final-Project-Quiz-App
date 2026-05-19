@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useState, use } from "react";
+import { useRouter } from "next/navigation";
 import {
   getUserProfile,
   getUserQuizHistory,
   getUserAchievements,
   updateUserProfile,
+  getUserId,
+  isAuthenticated,
   UserProfile,
   QuizHistory,
   Achievement,
@@ -14,6 +17,7 @@ import {
 import { UserProfileCard } from "@/components/UserProfileCard";
 import { QuizHistoryList } from "@/components/QuizHistoryList";
 import { AchievementList } from "@/components/AchievementList";
+import { ArrowLeft } from "lucide-react";
 
 interface ProfilePageProps {
   params: Promise<{
@@ -22,8 +26,10 @@ interface ProfilePageProps {
 }
 
 export default function ProfilePage({ params }: ProfilePageProps) {
+  const router = useRouter();
   const { userId: userIdStr } = use(params);
-  const userId = Number(userIdStr);
+  // Use authenticated user's ID from localStorage, fallback to URL param
+  const [userId, setUserId] = useState<number | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [quizHistory, setQuizHistory] = useState<QuizHistory[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
@@ -31,7 +37,19 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Set userId from localStorage on client mount
   useEffect(() => {
+    if (!isAuthenticated()) {
+      router.push("/login");
+      return;
+    }
+    const authUserId = getUserId();
+    setUserId(authUserId);
+  }, [router]);
+
+  useEffect(() => {
+    if (!userId) return;
+
     const loadData = async () => {
       try {
         setIsLoading(true);
@@ -47,15 +65,13 @@ export default function ProfilePage({ params }: ProfilePageProps) {
         setQuizHistory(historyData);
         setAchievements(achievementData);
       } catch (err) {
-        setError("Failed to load profile. Ensure backend is running on port 8081.");
+        setError("Failed to load profile. Ensure backend is running on port 8082.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (userId) {
-      loadData();
-    }
+    loadData();
   }, [userId]);
 
   const handleUpdateProfile = async (data: UpdateUserProfileRequest) => {
@@ -102,6 +118,16 @@ export default function ProfilePage({ params }: ProfilePageProps) {
   return (
     <div className="min-h-screen bg-[#0D0D0E] text-white p-6">
       <div className="max-w-4xl mx-auto space-y-6">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.back()}
+            className="text-zinc-400 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+          <h1 className="text-3xl font-bold">Profile</h1>
+        </div>
+
         <UserProfileCard
           profile={profile}
           onUpdate={handleUpdateProfile}

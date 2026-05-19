@@ -20,10 +20,23 @@ export function QuizManager({ initialQuestions = [] }: { initialQuestions?: Ques
   useEffect(() => {
     async function loadData() {
       try {
-        const res = await fetch("http://localhost:8081/api/quiz/questions");
+        const res = await fetch("http://localhost:8082/api/quizzes");
         if (res.ok) {
-          const data = await res.json();
-          setQuestions(data);
+          const quizzes = await res.json();
+          if (quizzes && quizzes.length > 0) {
+            const allQuestions: Question[] = [];
+            quizzes.forEach((quiz: any) => {
+              if (quiz.questions && Array.isArray(quiz.questions)) {
+                quiz.questions.forEach((q: any) => {
+                  allQuestions.push({
+                    id: q.questionId || Math.random(),
+                    content: q.questionText || ""
+                  });
+                });
+              }
+            });
+            setQuestions(allQuestions);
+          }
         }
       } catch (err) {
         console.log("Quiz data not available, using empty state");
@@ -109,7 +122,7 @@ export function QuizManager({ initialQuestions = [] }: { initialQuestions?: Ques
               ))
             ) : (
               <div className="text-center py-12 bg-red-950/10 border border-red-900/20 rounded-xl">
-                <p className="text-red-400 text-sm">Offline: Connect to Spring Boot (Port 8081)</p>
+                <p className="text-red-400 text-sm">Offline: Connect to Spring Boot (Port 8082)</p>
               </div>
             )}
             <button className="w-full bg-purple-600 py-4 rounded-xl font-bold text-white hover:bg-purple-700 transition-all shadow-xl shadow-purple-900/10 mt-4 disabled:opacity-50">

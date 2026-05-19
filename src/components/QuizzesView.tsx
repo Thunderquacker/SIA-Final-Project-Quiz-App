@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 
 // The "export" keyword here is the CRITICAL fix
-export function QuizzesView() {
+export function QuizzesView({ onCreateClick }: { onCreateClick?: () => void }) {
   const quizzes = [
     {
       id: 1,
@@ -35,7 +35,10 @@ export function QuizzesView() {
           <h2 className="text-2xl font-bold text-white">Quiz Bank</h2>
           <p className="text-zinc-500 text-sm mt-1">Manage and edit your library of quiz materials</p>
         </div>
-        <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 text-sm font-semibold transition-all shadow-lg shadow-purple-900/20">
+        <button 
+          onClick={onCreateClick}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 text-sm font-semibold transition-all shadow-lg shadow-purple-900/20"
+        >
           <Plus className="w-4 h-4" />
           New Quiz
         </button>
