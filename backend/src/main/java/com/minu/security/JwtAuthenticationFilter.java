@@ -31,6 +31,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Long userId = jwtTokenProvider.getUserIdFromToken(token);
                 String email = jwtTokenProvider.getEmailFromToken(token);
                 
+                // Set userId and email in request attributes for controller access
+                request.setAttribute("userId", userId);
+                request.setAttribute("email", email);
+                
                 UsernamePasswordAuthenticationToken authentication = 
                         new UsernamePasswordAuthenticationToken(userId, null, null);
                 authentication.setDetails(email);
