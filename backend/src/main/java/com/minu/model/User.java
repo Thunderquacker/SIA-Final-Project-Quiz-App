@@ -1,64 +1,49 @@
 package com.minu.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users", indexes = {
-    @Index(name = "idx_username", columnList = "username"),
-    @Index(name = "idx_email", columnList = "email")
-})
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    @JsonProperty("username")
     @Column(nullable = false, unique = true)
     private String username;
 
+    @JsonProperty("email")
     @Column(nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
-    @Column(length = 500)
-    private String bio;
+    @Enumerated(EnumType.STRING)
+    @JsonProperty("role")
+    private Role role = Role.STUDENT;
 
-    @Column(length = 255)
-    private String profileImageUrl;
-
+    @JsonProperty("totalQuizzesTaken")
     @Column(nullable = false)
     private Integer totalQuizzesTaken = 0;
 
+    @JsonProperty("averageScore")
     @Column(nullable = false)
     private Double averageScore = 0.0;
 
+    @JsonProperty("achievementsCount")
     @Column(nullable = false)
     private Integer achievementsCount = 0;
-
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private java.util.List<QuizHistory> quizHistories;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private java.util.List<Achievement> achievements;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private java.util.List<Quiz> quizzes;
+    
+    // ... rest of your model ...
 }
-

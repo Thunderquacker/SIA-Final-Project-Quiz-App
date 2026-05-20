@@ -19,6 +19,7 @@ com\minu\dto\UserProfileDTO.class
 com\minu\dto\SignupRequest.class
 com\minu\dto\CreateQuizRequest$OptionRequest.class
 com\minu\dto\QuestionDTO$QuestionDTOBuilder.class
+com\minu\model\Role.class
 com\minu\controller\AuthController.class
 com\minu\exception\GlobalExceptionHandler.class
 com\minu\security\SecurityConfig.class
@@ -26,6 +27,7 @@ com\minu\controller\UserController.class
 com\minu\dto\QuizHistoryDTO.class
 com\minu\MinuApplication.class
 com\minu\model\QuizHistory$QuizHistoryBuilder.class
+com\minu\controller\AuthController$RegisterRequest.class
 com\minu\dto\AchievementDTO$AchievementDTOBuilder.class
 com\minu\security\JwtTokenProvider.class
 com\minu\repository\UserRepository.class
@@ -35,6 +37,7 @@ com\minu\repository\OptionRepository.class
 com\minu\dto\CreateQuizRequest$CreateQuizRequestBuilder.class
 com\minu\exception\ApiErrorResponse.class
 com\minu\exception\ApiErrorResponse$ApiErrorResponseBuilder.class
+com\minu\controller\AuthController$LoginRequest.class
 com\minu\model\User.class
 com\minu\dto\AuthResponse$AuthResponseBuilder.class
 com\minu\dto\CreateQuizRequest$QuestionRequest.class
@@ -44,6 +47,7 @@ com\minu\service\AuthService.class
 com\minu\dto\QuizSubmissionRequest$QuizSubmissionRequestBuilder.class
 com\minu\repository\QuizRepository.class
 com\minu\dto\LoginRequest$LoginRequestBuilder.class
+com\minu\controller\QuizController$ScoreUpdateRequest.class
 com\minu\dto\OptionDTO$OptionDTOBuilder.class
 com\minu\model\Achievement$AchievementBuilder.class
 com\minu\model\Achievement.class
